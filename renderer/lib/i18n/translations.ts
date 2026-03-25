@@ -290,6 +290,30 @@ export const translations = {
       enabled: "Enabled",
       disabled: "Disabled",
       toggle: "Toggle"
+    },
+
+    // Overlay
+    overlay: {
+      title: "Kisaki Text Tools",
+      close: "Close",
+      selectedText: "Selected text",
+      explain: "Explain",
+      summarize: "Summarize",
+      translate: "Translate",
+      factCheck: "Fact Check",
+      processing: "Kisaki is thinking...",
+      result: "Result",
+      readAloud: "Read aloud",
+      copy: "Copy to clipboard",
+      confidence: "Confidence",
+      sources: "View sources",
+      demoTitle: "Text Tools Demo",
+      demoInstructions:
+        "Highlight any text below to see the Kisaki text tools overlay appear",
+      sampleScience: "Sample: Science Text",
+      sampleNews: "Sample: News Article",
+      sampleForeign: "Sample: Foreign Language",
+      placeholder: "Highlight text in any app to use these tools"
     }
   }
 } as const;
