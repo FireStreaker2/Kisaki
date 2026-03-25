@@ -38,7 +38,7 @@ export const createOverlayWindow = (
   const win = new BrowserWindow({
     x: width - 300 - 20,
     y: height - 200 - 20,
-    show: false,
+    show: true,
     frame: false,
     transparent: true,
     alwaysOnTop: true,

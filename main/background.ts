@@ -1,7 +1,9 @@
 import path from "path";
 import clipboard from "clipboardy";
-import { app, BrowserWindow } from "electron";
+import { app } from "electron";
 import serve from "electron-serve";
+import { ipcMain } from "electron";
+import say from "say";
 import {
   createCompanionWindow,
   createMainWindow,
@@ -21,6 +23,8 @@ if (process.platform === "linux") {
   app.commandLine.appendSwitch("disable-gpu");
   app.commandLine.appendSwitch("disable-gpu-compositing");
   app.commandLine.appendSwitch("disable-dev-shm-usage");
+  app.commandLine.appendSwitch("enable-speech-dispatcher");
+  app.commandLine.appendSwitch("enable-speech-synthesis");
 
   if (!process.env.ELECTRON_OZONE_PLATFORM_HINT) {
     app.commandLine.appendSwitch("ozone-platform-hint", "x11");
@@ -60,7 +64,6 @@ if (isProd) serve({ directory: "app" });
     }
   });
 
-
   const companionWindow = createCompanionWindow();
 
   if (isProd) {
@@ -75,22 +78,17 @@ if (isProd) serve({ directory: "app" });
     overlayWindow.webContents.setZoomFactor(0.5);
   }
 
-  // ----------------------------------------------------
-  // ✅ INSERT APPROACH A — PRIMARY CLIPBOARD POLLING
-  // ----------------------------------------------------
   let lastSelection = "";
 
   setInterval(async () => {
     try {
-      const selection = await clipboard.read(); // reads PRIMARY on Linux
+      const selection = await clipboard.read();
 
       if (selection && selection !== lastSelection) {
         lastSelection = selection;
 
-        // Show overlay without stealing focus
         overlayWindow.showInactive();
 
-        // Send the selected text to the overlay React app
         overlayWindow.webContents.send("selection-text", selection);
       }
     } catch (err) {
@@ -105,3 +103,7 @@ app.on("child-process-gone", (_event, details) => {
 });
 
 app.on("window-all-closed", () => app.quit());
+
+ipcMain.on("speak-text", (_event, text: string) => {
+  say.speak(text);
+});

@@ -6,7 +6,7 @@ import { TextToolsPanel } from "@/components/overlay/text-tools";
 export default function OverlayPage() {
   return (
     <SettingsProvider>
-      <TextToolsPanel />;
+      <TextToolsPanel />
     </SettingsProvider>
   );
 }

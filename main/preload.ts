@@ -7,5 +7,15 @@ contextBridge.exposeInMainWorld("electron", {
 });
 
 contextBridge.exposeInMainWorld("electronAPI", {
-  onText: (cb: (arg0: any) => void) => ipcRenderer.on("selection-text", (_, text) => cb(text))
+  onText: (callback: (text: string) => void) => {
+    const listener = (_event: any, text: string) => callback(text);
+    ipcRenderer.on("selection-text", listener);
+
+    // Return cleanup function if needed
+    return () => ipcRenderer.removeListener("selection-text", listener);
+  },
+  speakText: (text: string) => {
+    if (!text) return;
+    ipcRenderer.send("speak-text", text); // optional Node-side TTS
+  }
 });
