@@ -20,6 +20,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Use the Hugging Face Inference client
+import { InferenceClient } from "@huggingface/inference";
+
 type ToolType = "explain" | "summarize" | "translate" | "factCheck" | null;
 
 interface ToolResult {
@@ -31,7 +34,6 @@ interface ToolResult {
 
 export function TextToolsPanel({ initialText = "" }: { initialText?: string }) {
   const { language } = useSettings();
-
   return (
     <I18nProvider language={language as Language}>
       <PanelContent initialText={initialText} />
@@ -48,6 +50,10 @@ function PanelContent({ initialText }: { initialText: string }) {
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
+  // Initialize Hugging Face client
+  const hf = new InferenceClient(process.env.NEXT_PUBLIC_HF_API_KEY || "");
+
+  // Listen for text from Electron main process
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("electronAPI" in window)) return;
@@ -92,32 +98,60 @@ function PanelContent({ initialText }: { initialText: string }) {
     setIsProcessing(true);
     setResult(null);
 
-    // Simulate API call
-    await new Promise((res) => setTimeout(res, 800));
+    try {
+      let prompt = "";
 
-    const mockResults: Record<NonNullable<ToolType>, ToolResult> = {
-      explain: {
-        type: "explain",
-        content: `Explanation:\n\nKisaki breaks down complex info into simple terms.`
-      },
-      summarize: {
-        type: "summarize",
-        content: `Summary:\n\nKisaki condenses text into key points.`
-      },
-      translate: {
-        type: "translate",
-        content: `Translation:\n\n(This is a mock translation.)`
-      },
-      factCheck: {
-        type: "factCheck",
-        content: "Fact check completed. No major inaccuracies detected.",
-        confidence: 84,
-        sources: ["Wikipedia", "Nature"]
+      switch (tool) {
+        case "explain":
+          prompt = `Explain the following text in simple terms:\n\n${selectedText}`;
+          break;
+        case "summarize":
+          prompt = `Summarize the following text in concise bullet points:\n\n${selectedText}`;
+          break;
+        case "translate":
+          prompt = `Translate the following text into Chinese:\n\n${selectedText}`;
+          break;
+        case "factCheck":
+          prompt = `Fact-check the following statement and return confidence (0-100) and sources:\n\n${selectedText}`;
+          break;
       }
-    };
 
-    setResult(mockResults[tool]);
-    setIsProcessing(false);
+      // Call Hugging Face text-generation endpoint
+      const response = await hf.chatCompletion({
+        model: "meta-llama/Llama-3.1-8B-Instruct:cerebras",
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ]
+      });
+
+      const content = response.choices[0].message.content as string;
+
+      const newResult: ToolResult = { type: tool, content };
+
+      if (tool === "factCheck") {
+        const match = content.match(/Confidence: (\d+)%/);
+        if (match) newResult.confidence = parseInt(match[1], 10);
+
+        const sourcesMatch = content.match(/Sources: (.*)/);
+        if (sourcesMatch)
+          newResult.sources = sourcesMatch[1]
+            .split(",")
+            .map((s: string) => s.trim());
+      }
+
+      setResult(newResult);
+    } catch (err) {
+      console.error(err);
+      setResult({
+        type: tool,
+        content: "Error: Could not fetch result from Hugging Face API."
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const copyResult = async () => {
@@ -134,14 +168,13 @@ function PanelContent({ initialText }: { initialText: string }) {
   };
 
   return (
-    <Card className="border-primary/20 h-100 w-full max-w-xl overflow-hidden border-2 shadow-lg">
+    <Card className="border-primary/20 h-full w-full max-w-xl border-2 shadow-lg">
       <div className="bg-primary/5 border-border flex items-center gap-2 border-b px-4 py-3">
         <Sparkles className="text-primary h-5 w-5" />
         <span className="text-foreground font-semibold">{t.overlay.title}</span>
       </div>
 
       <CardContent className="space-y-4 p-4">
-        {/* Text input */}
         <textarea
           value={selectedText}
           onChange={(e) => setSelectedText(e.target.value)}
@@ -149,8 +182,7 @@ function PanelContent({ initialText }: { initialText: string }) {
           className="bg-muted/40 text-foreground focus:ring-primary w-full resize-none rounded-lg border px-3 py-2 text-base outline-none focus:ring-2"
         />
 
-        {/* Tool buttons */}
-        <div className="flex flex-wrap justify-center gap-4">
+        <div className="flex flex-row justify-center gap-4">
           {tools.map(({ type, icon: Icon, bg, color }) => (
             <Button
               key={type}
@@ -176,7 +208,6 @@ function PanelContent({ initialText }: { initialText: string }) {
           ))}
         </div>
 
-        {/* Result section */}
         {(isProcessing || result) && (
           <div className="border-t pt-4">
             {isProcessing ? (
@@ -188,7 +219,6 @@ function PanelContent({ initialText }: { initialText: string }) {
               </div>
             ) : result ? (
               <div className="space-y-3">
-                {/* Header */}
                 <div className="flex items-center justify-between">
                   <span className="text-foreground text-lg font-semibold">
                     {t.overlay.result}
@@ -207,12 +237,10 @@ function PanelContent({ initialText }: { initialText: string }) {
                   </div>
                 </div>
 
-                {/* Content */}
                 <div className="bg-card border-border rounded-xl border p-4 text-base leading-relaxed whitespace-pre-wrap">
                   {result.content}
                 </div>
 
-                {/* Fact-check metadata */}
                 {result.type === "factCheck" &&
                   result.confidence !== undefined && (
                     <div className="space-y-2">
