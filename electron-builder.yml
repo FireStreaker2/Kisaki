@@ -1,6 +1,6 @@
-appId: com.example.nextron
-productName: My Nextron App
-copyright: Copyright © 2018 Yoshihide Shiono
+appId: gq.firestreaker2.kisaki
+productName: Kisaki
+copyright: Copyright © 2026 FireStreaker2
 directories:
   output: dist
   buildResources: resources
