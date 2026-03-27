@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useRef,
+  useEffect,
+  type ReactNode
+} from "react";
 
 interface CompanionPersonality {
   name: string;
@@ -8,7 +15,6 @@ interface CompanionPersonality {
   verbosity: "brief" | "normal" | "detailed";
   humor: boolean;
 }
-
 interface VoiceConfig {
   enabled: boolean;
   voice: string;
@@ -18,7 +24,6 @@ interface VoiceConfig {
   wakeWord: string;
   continuousListening: boolean;
 }
-
 interface TextToolsConfig {
   explainEnabled: boolean;
   summarizeEnabled: boolean;
@@ -28,7 +33,6 @@ interface TextToolsConfig {
   readingLevel: "simple" | "standard" | "advanced";
   autoDetectLanguage: boolean;
 }
-
 interface AIModelConfig {
   provider: string;
   model: string;
@@ -36,7 +40,6 @@ interface AIModelConfig {
   useCustomEndpoint: boolean;
   customEndpoint: string;
 }
-
 interface MCPConfig {
   connected: boolean;
   serverUrl: string;
@@ -44,7 +47,6 @@ interface MCPConfig {
   autoConnect: boolean;
   allowedTools: string[];
 }
-
 interface MetaConfig {
   theme: "light" | "dark" | "system";
   fontSize: number;
@@ -55,7 +57,6 @@ interface MetaConfig {
   autoSave: boolean;
   language: string;
 }
-
 export interface AllSettings {
   personality: CompanionPersonality;
   voiceConfig: VoiceConfig;
@@ -66,27 +67,21 @@ export interface AllSettings {
 }
 
 interface SettingsContextType {
-  // Companion
   personality: CompanionPersonality;
   setPersonality: (p: CompanionPersonality) => void;
 
-  // Voice
   voiceConfig: VoiceConfig;
   setVoiceConfig: (v: VoiceConfig) => void;
 
-  // Text Tools
   textToolsConfig: TextToolsConfig;
   setTextToolsConfig: (t: TextToolsConfig) => void;
 
-  // AI Model
   aiModelConfig: AIModelConfig;
   setAIModelConfig: (a: AIModelConfig) => void;
 
-  // MCP
   mcpConfig: MCPConfig;
   setMCPConfig: (m: MCPConfig) => void;
 
-  // Meta (Dashboard)
   theme: "light" | "dark" | "system";
   setTheme: (t: "light" | "dark" | "system") => void;
   fontSize: number;
@@ -104,7 +99,6 @@ interface SettingsContextType {
   language: string;
   setLanguage: (l: string) => void;
 
-  // Export all settings
   getAllSettings: () => AllSettings;
 }
 
@@ -113,6 +107,9 @@ const SettingsContext = createContext<SettingsContextType | undefined>(
 );
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
+  const [isHydrated, setIsHydrated] = useState(false);
+  const isApplyingRemoteUpdate = useRef(false);
+
   const [personality, setPersonality] = useState<CompanionPersonality>({
     name: "Kisaki",
     tone: "friendly",
@@ -183,6 +180,93 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }
   });
 
+  // ------------------------------
+  // Electron IPC: fetch & sync settings
+  // ------------------------------
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.electron) {
+      setIsHydrated(true);
+      return;
+    }
+
+    // Initial fetch from main process
+    window.electron
+      .invoke<AllSettings>("get-settings")
+      .then((s: AllSettings) => {
+        isApplyingRemoteUpdate.current = true;
+        setPersonality(s.personality);
+        setVoiceConfig(s.voiceConfig);
+        setTextToolsConfig(s.textToolsConfig);
+        setAIModelConfig(s.aiModelConfig);
+        setMCPConfig(s.mcpConfig);
+        setTheme(s.metaConfig.theme);
+        setFontSize(s.metaConfig.fontSize);
+        setHighContrast(s.metaConfig.highContrast);
+        setReducedMotion(s.metaConfig.reducedMotion);
+        setSoundEffects(s.metaConfig.soundEffects);
+        setNotifications(s.metaConfig.notifications);
+        setAutoSave(s.metaConfig.autoSave);
+        setLanguage(s.metaConfig.language);
+      })
+      .finally(() => {
+        setIsHydrated(true);
+      });
+
+    // Listen for updates from main process
+    const unsubscribe = window.electron.on("settings-updated", (s: AllSettings) => {
+      isApplyingRemoteUpdate.current = true;
+      setPersonality(s.personality);
+      setVoiceConfig(s.voiceConfig);
+      setTextToolsConfig(s.textToolsConfig);
+      setAIModelConfig(s.aiModelConfig);
+      setMCPConfig(s.mcpConfig);
+      setTheme(s.metaConfig.theme);
+      setFontSize(s.metaConfig.fontSize);
+      setHighContrast(s.metaConfig.highContrast);
+      setReducedMotion(s.metaConfig.reducedMotion);
+      setSoundEffects(s.metaConfig.soundEffects);
+      setNotifications(s.metaConfig.notifications);
+      setAutoSave(s.metaConfig.autoSave);
+      setLanguage(s.metaConfig.language);
+      setIsHydrated(true);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // ------------------------------
+  // Sync changes to main process
+  // ------------------------------
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.electron || !isHydrated) {
+      return;
+    }
+
+    if (isApplyingRemoteUpdate.current) {
+      isApplyingRemoteUpdate.current = false;
+      return;
+    }
+
+    window.electron.send("update-settings", getAllSettings());
+  }, [
+    isHydrated,
+    personality,
+    voiceConfig,
+    textToolsConfig,
+    aiModelConfig,
+    mcpConfig,
+    theme,
+    fontSize,
+    highContrast,
+    reducedMotion,
+    soundEffects,
+    notifications,
+    autoSave,
+    language
+  ]);
+
   return (
     <SettingsContext.Provider
       value={{
@@ -222,8 +306,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
 export function useSettings() {
   const context = useContext(SettingsContext);
-  if (!context) {
+  if (!context)
     throw new Error("useSettings must be used within a SettingsProvider");
-  }
   return context;
 }

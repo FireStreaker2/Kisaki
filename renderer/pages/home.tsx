@@ -10,10 +10,7 @@ import { MCPSettings } from "@/components/dashboard/mcp-settings";
 import { MetaSettings } from "@/components/dashboard/meta-settings";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { StatusPanel } from "@/components/dashboard/status-panel";
-import {
-  SettingsProvider,
-  useSettings
-} from "@/components/dashboard/settings-context";
+import { useSettings } from "@/components/dashboard/settings-context";
 import { I18nProvider } from "../lib/i18n/i18n-context";
 import type { Language } from "../lib/i18n/translations";
 
@@ -67,9 +64,5 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-  return (
-    <SettingsProvider>
-      <DashboardContent />
-    </SettingsProvider>
-  );
+  return <DashboardContent />;
 }

@@ -1,6 +1,6 @@
 import path from "path";
 import clipboard from "clipboardy";
-import { app } from "electron";
+import { app, BrowserWindow } from "electron";
 import serve from "electron-serve";
 import { ipcMain } from "electron";
 import say from "say";
@@ -9,7 +9,10 @@ import {
   createMainWindow,
   createOverlayWindow
 } from "./helpers/create-window";
+import { defaultSettings } from "./helpers/settings";
+import { AllSettings } from "../renderer/components/dashboard/settings-context";
 
+let settings = defaultSettings;
 const isProd = process.env.NODE_ENV === "production";
 
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
@@ -106,4 +109,13 @@ app.on("window-all-closed", () => app.quit());
 
 ipcMain.on("speak-text", (_event, text: string) => {
   say.speak(text);
+});
+
+ipcMain.handle("get-settings", () => settings);
+ipcMain.on("update-settings", (_, newSettings: Partial<AllSettings>) => {
+  settings = { ...settings, ...newSettings };
+
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send("settings-updated", settings);
+  });
 });

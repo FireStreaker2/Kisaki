@@ -1,7 +1,16 @@
-import { IpcHandler } from "../main/preload";
-
 declare global {
   interface Window {
-    ipc: IpcHandler;
+    electron: {
+      send: (channel: string, data?: unknown) => void;
+      invoke: <T = unknown>(channel: string, data?: unknown) => Promise<T>;
+      on: (channel: string, listener: (...args: any[]) => void) => () => void;
+      receive: (channel: string, func: (...args: any[]) => void) => void;
+    };
+    electronAPI: {
+      onText: (callback: (text: string) => void) => () => void;
+      speakText: (text: string) => void;
+    };
   }
 }
+
+export {};

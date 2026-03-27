@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Use the Hugging Face Inference client
 import { InferenceClient } from "@huggingface/inference";
 
 type ToolType = "explain" | "summarize" | "translate" | "factCheck" | null;
@@ -30,6 +29,13 @@ interface ToolResult {
   content: string;
   confidence?: number;
   sources?: string[];
+}
+
+interface ToolButton {
+  type: ToolType;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bg: string;
 }
 
 export function TextToolsPanel({ initialText = "" }: { initialText?: string }) {
@@ -43,53 +49,57 @@ export function TextToolsPanel({ initialText = "" }: { initialText?: string }) {
 
 function PanelContent({ initialText }: { initialText: string }) {
   const { t } = useI18n();
-  const [selectedText, setSelectedText] = useState(initialText);
+  const [selectedText, setSelectedText] = useState<string>(initialText);
   const [activeTool, setActiveTool] = useState<ToolType>(null);
   const [result, setResult] = useState<ToolResult | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [expanded, setExpanded] = useState<boolean>(false);
 
-  // Initialize Hugging Face client
+  const { textToolsConfig } = useSettings();
+
   const hf = new InferenceClient(process.env.NEXT_PUBLIC_HF_API_KEY || "");
 
-  // Listen for text from Electron main process
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("electronAPI" in window)) return;
 
-    // @ts-ignore
-    window.electronAPI.onText((text: string) => {
+    const unsubscribe = window.electronAPI.onText((text: string) => {
       setSelectedText(text);
     });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
-  const tools = [
-    {
-      type: "explain" as const,
+  // Only include enabled tools
+  const tools: ToolButton[] = [
+    textToolsConfig.explainEnabled && {
+      type: "explain",
       icon: Lightbulb,
       color: "text-amber-600 dark:text-amber-400",
       bg: "bg-amber-50 dark:bg-amber-950/50"
     },
-    {
-      type: "summarize" as const,
+    textToolsConfig.summarizeEnabled && {
+      type: "summarize",
       icon: FileText,
       color: "text-blue-600 dark:text-blue-400",
       bg: "bg-blue-50 dark:bg-blue-950/50"
     },
-    {
-      type: "translate" as const,
+    textToolsConfig.translateEnabled && {
+      type: "translate",
       icon: Languages,
       color: "text-emerald-600 dark:text-emerald-400",
       bg: "bg-emerald-50 dark:bg-emerald-950/50"
     },
-    {
-      type: "factCheck" as const,
+    textToolsConfig.factCheckEnabled && {
+      type: "factCheck",
       icon: ShieldCheck,
       color: "text-purple-600 dark:text-purple-400",
       bg: "bg-purple-50 dark:bg-purple-950/50"
     }
-  ];
+  ].filter(Boolean) as ToolButton[];
 
   const handleToolClick = async (tool: ToolType) => {
     if (!tool || !selectedText.trim()) return;
@@ -109,22 +119,16 @@ function PanelContent({ initialText }: { initialText: string }) {
           prompt = `Summarize the following text in concise bullet points:\n\n${selectedText}`;
           break;
         case "translate":
-          prompt = `Translate the following text into Chinese:\n\n${selectedText}`;
+          prompt = `Translate the following text into ${textToolsConfig.defaultLanguage}:\n\n${selectedText}`;
           break;
         case "factCheck":
           prompt = `Fact-check the following statement and return confidence (0-100) and sources:\n\n${selectedText}`;
           break;
       }
 
-      // Call Hugging Face text-generation endpoint
       const response = await hf.chatCompletion({
         model: "meta-llama/Llama-3.1-8B-Instruct:cerebras",
-        messages: [
-          {
-            role: "user",
-            content: prompt
-          }
-        ]
+        messages: [{ role: "user", content: prompt }]
       });
 
       const content = response.choices[0].message.content as string;
@@ -183,7 +187,7 @@ function PanelContent({ initialText }: { initialText: string }) {
         />
 
         <div className="flex flex-row justify-center gap-4">
-          {tools.map(({ type, icon: Icon, bg, color }) => (
+          {tools.map(({ type, icon: Icon, bg, color }: ToolButton) => (
             <Button
               key={type}
               variant="ghost"
@@ -202,7 +206,7 @@ function PanelContent({ initialText }: { initialText: string }) {
                 )}
               />
               <span className="text-center text-base font-semibold">
-                {t.overlay[type]}
+                {t.overlay[type as keyof typeof t.overlay]}
               </span>
             </Button>
           ))}
