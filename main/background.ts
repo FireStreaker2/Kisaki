@@ -5,7 +5,6 @@ import serve from "electron-serve";
 import { ipcMain } from "electron";
 import say from "say";
 import {
-  createCompanionWindow,
   createMainWindow,
   createOverlayWindow
 } from "./helpers/create-window";
@@ -177,25 +176,21 @@ if (isProd) serve({ directory: "app" });
     }
   });
 
-  const overlayWindow = createOverlayWindow("overlay", {
-    width: 290,
-    height: 200,
+  let overlayWindow = createOverlayWindow("overlay", {
+    width: 250,
+    height: 210,
     webPreferences: {
       preload: path.join(__dirname, "preload.js")
     }
   });
 
-  const companionWindow = createCompanionWindow();
-
   if (isProd) {
     await mainWindow.loadURL("app://./home");
     await overlayWindow.loadURL("app://./overlay");
-    await companionWindow.loadURL("app://./companion");
   } else {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     await overlayWindow.loadURL(`http://localhost:${port}/overlay`);
-    await companionWindow.loadURL(`http://localhost:${port}/companion`);
     overlayWindow.webContents.setZoomFactor(0.5);
   }
 
@@ -207,6 +202,24 @@ if (isProd) serve({ directory: "app" });
 
       if (selection && selection !== lastSelection) {
         lastSelection = selection;
+
+        // Reopen overlay if it was closed
+        if (!overlayWindow || overlayWindow.isDestroyed()) {
+          overlayWindow = createOverlayWindow("overlay", {
+            width: 250,
+            height: 210,
+            webPreferences: {
+              preload: path.join(__dirname, "preload.js")
+            }
+          });
+          if (isProd) {
+            await overlayWindow.loadURL("app://./overlay");
+          } else {
+            const port = process.argv[2];
+            await overlayWindow.loadURL(`http://localhost:${port}/overlay`);
+            overlayWindow.webContents.setZoomFactor(0.5);
+          }
+        }
 
         overlayWindow.showInactive();
 

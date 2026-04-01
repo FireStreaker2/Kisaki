@@ -240,21 +240,21 @@ function PanelContent({ initialText }: { initialText: string }) {
   }, []);
 
   return (
-    <Card className="border-primary/20 h-full w-full max-w-xl border-2 shadow-lg">
-      <div className="bg-primary/5 border-border flex items-center gap-2 border-b px-4 py-3">
+    <Card className="border-primary/20 w-full border-2 shadow-lg flex flex-col h-screen">
+      <div className="bg-primary/5 border-border flex items-center gap-2 border-b px-4 py-2 shrink-0">
         <Sparkles className="text-primary h-5 w-5" />
-        <span className="text-foreground font-semibold">{t.overlay.title}</span>
+        <span className="text-foreground font-semibold text-sm">{t.overlay.title}</span>
       </div>
 
-      <CardContent className="space-y-4 p-4">
+      <CardContent className="space-y-3 p-3 overflow-y-auto flex-1">
         <textarea
           value={selectedText}
           onChange={(e) => setSelectedText(e.target.value)}
           placeholder={t.overlay.placeholder}
-          className="bg-muted/40 text-foreground focus:ring-primary w-full resize-none rounded-lg border px-3 py-2 text-base outline-none focus:ring-2"
+          className="bg-muted/40 text-foreground focus:ring-primary w-full resize-none rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 h-16"
         />
 
-        <div className="flex flex-row justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-2">
           {tools.map(({ type, icon: Icon, bg, color }: ToolButton) => (
             <Button
               key={type}
@@ -262,18 +262,18 @@ function PanelContent({ initialText }: { initialText: string }) {
               onClick={() => handleToolClick(type)}
               disabled={!selectedText.trim() || isProcessing}
               className={cn(
-                "flex min-w-30 flex-col items-center justify-center gap-2 rounded-xl px-6 py-8 transition-all",
+                "flex flex-col items-center justify-center gap-1 rounded-lg px-3 py-4 transition-all text-xs flex-1 min-w-20 max-w-28",
                 bg,
                 activeTool === type && "bg-primary text-white"
               )}
             >
               <Icon
                 className={cn(
-                  "h-8 w-8",
+                  "h-6 w-6",
                   activeTool === type ? "text-white" : color
                 )}
               />
-              <span className="text-center text-base font-semibold">
+              <span className="text-center font-semibold text-xs">
                 {t.overlay[type as keyof typeof t.overlay]}
               </span>
             </Button>
@@ -281,51 +281,57 @@ function PanelContent({ initialText }: { initialText: string }) {
         </div>
 
         {(isProcessing || result) && (
-          <div className="border-t pt-4">
+          <div className="border-t pt-2">
             {isProcessing ? (
-              <div className="flex flex-col items-center gap-3 py-6">
-                <Spinner className="text-primary h-8 w-8" />
-                <p className="text-muted-foreground text-lg">
+              <div className="flex flex-col items-center gap-2 py-3">
+                <Spinner className="text-primary h-6 w-6" />
+                <p className="text-muted-foreground text-xs">
                   {t.overlay.processing}
                 </p>
               </div>
             ) : result ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground text-lg font-semibold">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-foreground text-sm font-semibold">
                     {t.overlay.result}
                   </span>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-0.5">
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
                       onClick={speakResult}
                       disabled={!soundEffects || !voiceConfig.enabled}
+                      className="h-7 w-7 p-0"
                     >
                       {isSpeaking ? (
-                        <Square className="h-5 w-5" />
+                        <Square className="h-4 w-4" />
                       ) : (
-                        <Volume2 className="h-5 w-5" />
+                        <Volume2 className="h-4 w-4" />
                       )}
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={copyResult}>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={copyResult}
+                      className="h-7 w-7 p-0"
+                    >
                       {copied ? (
-                        <Check className="text-success h-5 w-5" />
+                        <Check className="text-success h-4 w-4" />
                       ) : (
-                        <Copy className="h-5 w-5" />
+                        <Copy className="h-4 w-4" />
                       )}
                     </Button>
                   </div>
                 </div>
 
-                <div className="bg-card border-border rounded-xl border p-4 text-base leading-relaxed whitespace-pre-wrap">
+                <div className="bg-card border-border rounded-lg border p-2 text-xs leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
                   {result.content}
                 </div>
 
                 {result.type === "factCheck" &&
                   result.confidence !== undefined && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">
                           {t.overlay.confidence}:
                         </span>
@@ -334,7 +340,7 @@ function PanelContent({ initialText }: { initialText: string }) {
                         </span>
                       </div>
 
-                      <div className="bg-muted h-2 overflow-hidden rounded-full">
+                      <div className="bg-muted h-1.5 overflow-hidden rounded-full">
                         <div
                           className="bg-primary h-full rounded-full transition-all"
                           style={{ width: `${result.confidence}%` }}
@@ -345,23 +351,23 @@ function PanelContent({ initialText }: { initialText: string }) {
                         <div>
                           <button
                             onClick={() => setExpanded(!expanded)}
-                            className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-sm"
+                            className="text-muted-foreground hover:text-foreground flex items-center gap-0.5 text-xs"
                           >
                             {t.overlay.sources}
                             <ChevronDown
                               className={cn(
-                                "h-4 w-4",
+                                "h-3 w-3",
                                 expanded && "rotate-180"
                               )}
                             />
                           </button>
 
                           {expanded && (
-                            <ul className="mt-2 space-y-1">
+                            <ul className="mt-1 space-y-0.5">
                               {result.sources.map((s, i) => (
                                 <li
                                   key={i}
-                                  className="text-primary cursor-pointer text-sm hover:underline"
+                                  className="text-primary cursor-pointer text-xs hover:underline truncate"
                                 >
                                   {s}
                                 </li>

@@ -36,8 +36,8 @@ export const createOverlayWindow = (
   const { width, height } = primaryDisplay.workAreaSize;
 
   const win = new BrowserWindow({
-    x: width - 300 - 20,
-    y: height - 200 - 20,
+    x: width - 500 - 20,
+    y: height - (options.height || 420) - 20,
     show: true,
     frame: false,
     transparent: true,
@@ -63,31 +63,4 @@ export const createOverlayWindow = (
   return win;
 };
 
-export const createCompanionWindow = () => {
-  const { screen } = require("electron");
 
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.workAreaSize;
-
-  const win = new BrowserWindow({
-    width: 100,
-    height: 100,
-    x: width - 400 - 20,
-    y: height - 150 - 20,
-    frame: false,
-    transparent: true,
-    alwaysOnTop: true,
-    resizable: false,
-    skipTaskbar: true,
-    focusable: false,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false
-    }
-  });
-
-  win.setAlwaysOnTop(true, "floating");
-
-  return win;
-};
