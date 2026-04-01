@@ -14,7 +14,7 @@ export default function Document() {
           href="/icon-dark-32x32.png"
           media="(prefers-color-scheme: dark)"
         />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/icon.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/apple-icon.png" />
       </Head>
       <body className="font-sans antialiased">
