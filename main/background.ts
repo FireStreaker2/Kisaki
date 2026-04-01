@@ -1,6 +1,6 @@
 import path from "path";
 import clipboard from "clipboardy";
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, shell } from "electron";
 import serve from "electron-serve";
 import { ipcMain } from "electron";
 import say from "say";
@@ -8,7 +8,12 @@ import {
   createMainWindow,
   createOverlayWindow
 } from "./helpers/create-window";
-import { defaultSettings } from "./helpers/settings";
+import {
+  defaultSettings,
+  loadPersistedSettings,
+  mergeSettings,
+  persistSettings
+} from "./helpers/settings";
 import { AllSettings } from "../renderer/components/dashboard/settings-context";
 
 let settings = defaultSettings;
@@ -167,6 +172,7 @@ if (isProd) serve({ directory: "app" });
 
 (async () => {
   await app.whenReady();
+  settings = await loadPersistedSettings(app.getPath("userData"));
 
   const mainWindow = createMainWindow("main", {
     width: 1000,
@@ -255,9 +261,18 @@ ipcMain.on("restart-app", () => {
   app.exit(0);
 });
 
+ipcMain.on("open-external", (_event, url: string) => {
+  if (!url) return;
+  shell.openExternal(url);
+});
+
 ipcMain.handle("get-settings", () => settings);
 ipcMain.on("update-settings", (_, newSettings: Partial<AllSettings>) => {
-  settings = { ...settings, ...newSettings };
+  settings = mergeSettings(settings, newSettings);
+
+  persistSettings(app.getPath("userData"), settings).catch((error) => {
+    console.error("[main] failed to persist settings", error);
+  });
 
   BrowserWindow.getAllWindows().forEach((win) => {
     win.webContents.send("settings-updated", settings);

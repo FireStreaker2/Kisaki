@@ -13,6 +13,7 @@ declare global {
         voice?: string;
         speed?: number;
       }) => void;
+      openExternal: (url: string) => void;
     };
   }
 }

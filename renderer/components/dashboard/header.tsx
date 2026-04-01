@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Moon, Sun, Menu, HelpCircle } from "lucide-react";
+import { Moon, Sun, Menu, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "./settings-context";
 import { useI18n } from "@/lib/i18n/i18n-context";
@@ -21,8 +21,12 @@ interface HeaderProps {
 }
 
 export function Header({ activeTab, onTabChange }: HeaderProps) {
-  const { theme, setTheme, notifications, reducedMotion } = useSettings();
+  const { theme, setTheme, reducedMotion } = useSettings();
   const { t } = useI18n();
+
+  const openGithub = () => {
+    window.electronAPI.openExternal("https://github.com/FireStreaker2/Kisaki");
+  };
 
   return (
     <header className="border-border bg-card flex h-20 items-center justify-between border-b px-4 lg:px-8">
@@ -58,23 +62,11 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
         <Button
           variant="ghost"
           size="icon"
+          onClick={openGithub}
           className={`h-12 w-12 ${reducedMotion ? "" : "transition-all"}`}
           aria-label={t.header.getHelp}
         >
           <HelpCircle className="h-6 w-6" />
-        </Button>
-
-        {/* Notifications */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className={`relative h-12 w-12 ${reducedMotion ? "" : "transition-all"}`}
-          aria-label={`${t.header.notifications} ${notifications ? t.common.enabled : t.common.disabled}`}
-        >
-          <Bell className="h-6 w-6" />
-          {notifications && (
-            <span className="bg-accent absolute top-2 right-2 h-3 w-3 rounded-full" />
-          )}
         </Button>
 
         {/* Theme Toggle */}

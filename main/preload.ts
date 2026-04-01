@@ -32,5 +32,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   speakText: (payload: { text: string; voice?: string; speed?: number }) => {
     if (!payload?.text) return;
     ipcRenderer.send("speak-text", payload); // Node-side TTS
+  },
+  openExternal: (url: string) => {
+    if (!url) return;
+    ipcRenderer.send("open-external", url);
   }
 });
