@@ -47,9 +47,6 @@ export function TextToolsSettings() {
     { code: "it", name: t.languages.it },
     { code: "pt", name: t.languages.pt },
     { code: "zh", name: t.languages.zh },
-    { code: "ja", name: t.languages.ja },
-    { code: "ko", name: t.languages.ko },
-    { code: "ar", name: t.languages.ar }
   ];
 
   const textTools = [

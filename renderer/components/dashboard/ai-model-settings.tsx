@@ -8,10 +8,6 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -21,13 +17,7 @@ import {
 } from "@/components/ui/select";
 import { useSettings } from "./settings-context";
 import { useI18n } from "@/lib/i18n/i18n-context";
-import { cn } from "@/lib/utils";
-import {
-  FieldGroup,
-  Field,
-  FieldLabel,
-  FieldDescription
-} from "@/components/ui/field";
+import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 
 // AI Model options - free models
 const aiModels = [
@@ -150,7 +140,9 @@ export function AIModelSettings() {
                 <p className="text-muted-foreground text-sm">
                   {t.aiModel.modelCost}
                 </p>
-                <p className="text-success mt-1 font-semibold">{t.aiModel.free}</p>
+                <p className="text-success mt-1 font-semibold">
+                  {t.aiModel.free}
+                </p>
               </div>
             </div>
           )}

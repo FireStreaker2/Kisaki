@@ -89,7 +89,9 @@ export function MobileSidebar({ activeTab, onTabChange }: MobileSidebarProps) {
                 <div
                   className={cn(
                     "flex h-10 w-10 items-center justify-center rounded-lg",
-                    isActive ? "bg-sidebar-primary-foreground/20" : "bg-sidebar-accent"
+                    isActive
+                      ? "bg-sidebar-primary-foreground/20"
+                      : "bg-sidebar-accent"
                   )}
                 >
                   <Icon

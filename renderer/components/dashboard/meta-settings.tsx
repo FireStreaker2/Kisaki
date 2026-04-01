@@ -60,6 +60,7 @@ export function MetaSettings() {
     { code: "en", name: t.languages.en },
     { code: "es", name: t.languages.es },
     { code: "fr", name: t.languages.fr },
+    { code: "zh", name: t.languages.zh },
     { code: "de", name: t.languages.de },
     { code: "it", name: t.languages.it },
     { code: "pt", name: t.languages.pt }

@@ -58,10 +58,11 @@ const voices = [
 ];
 
 export function VoiceSettings() {
-  const { voiceConfig, setVoiceConfig, reducedMotion } = useSettings();
+  const { voiceConfig, setVoiceConfig, reducedMotion, soundEffects } = useSettings();
   const { t } = useI18n();
 
   const testVoice = () => {
+    if (!soundEffects) return;
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(t.voice.testMessage);
       utterance.rate = voiceConfig.speed;
@@ -155,6 +156,7 @@ export function VoiceSettings() {
             onClick={testVoice}
             variant="outline"
             size="lg"
+            disabled={!soundEffects}
             className="mt-4 h-12 gap-2 text-base"
           >
             <Volume2 className="h-5 w-5" />

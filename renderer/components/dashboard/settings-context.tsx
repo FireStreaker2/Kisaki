@@ -134,8 +134,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     customEndpoint: ""
   });
 
-
-
   const [theme, setTheme] = useState<"light" | "dark" | "system">("light");
   const [fontSize, setFontSize] = useState(18);
   const [highContrast, setHighContrast] = useState(false);
@@ -194,22 +192,25 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       });
 
     // Listen for updates from main process
-    const unsubscribe = window.electron.on("settings-updated", (s: AllSettings) => {
-      isApplyingRemoteUpdate.current = true;
-      setPersonality(s.personality);
-      setVoiceConfig(s.voiceConfig);
-      setTextToolsConfig(s.textToolsConfig);
-      setAIModelConfig(s.aiModelConfig);
-      setTheme(s.metaConfig.theme);
-      setFontSize(s.metaConfig.fontSize);
-      setHighContrast(s.metaConfig.highContrast);
-      setReducedMotion(s.metaConfig.reducedMotion);
-      setSoundEffects(s.metaConfig.soundEffects);
-      setNotifications(s.metaConfig.notifications);
-      setAutoSave(s.metaConfig.autoSave);
-      setLanguage(s.metaConfig.language);
-      setIsHydrated(true);
-    });
+    const unsubscribe = window.electron.on(
+      "settings-updated",
+      (s: AllSettings) => {
+        isApplyingRemoteUpdate.current = true;
+        setPersonality(s.personality);
+        setVoiceConfig(s.voiceConfig);
+        setTextToolsConfig(s.textToolsConfig);
+        setAIModelConfig(s.aiModelConfig);
+        setTheme(s.metaConfig.theme);
+        setFontSize(s.metaConfig.fontSize);
+        setHighContrast(s.metaConfig.highContrast);
+        setReducedMotion(s.metaConfig.reducedMotion);
+        setSoundEffects(s.metaConfig.soundEffects);
+        setNotifications(s.metaConfig.notifications);
+        setAutoSave(s.metaConfig.autoSave);
+        setLanguage(s.metaConfig.language);
+        setIsHydrated(true);
+      }
+    );
 
     return () => {
       unsubscribe();

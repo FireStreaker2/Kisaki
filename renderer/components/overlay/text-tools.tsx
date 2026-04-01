@@ -56,7 +56,8 @@ function PanelContent({ initialText }: { initialText: string }) {
   const [copied, setCopied] = useState<boolean>(false);
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  const { textToolsConfig, personality, aiModelConfig } = useSettings();
+  const { textToolsConfig, personality, aiModelConfig, soundEffects } =
+    useSettings();
 
   const hf = new InferenceClient(process.env.NEXT_PUBLIC_HF_API_KEY || "");
 
@@ -178,6 +179,7 @@ function PanelContent({ initialText }: { initialText: string }) {
   };
 
   const speakResult = () => {
+    if (!soundEffects) return;
     if (!result?.content || !("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(result.content);
     window.speechSynthesis.speak(u);
@@ -240,7 +242,12 @@ function PanelContent({ initialText }: { initialText: string }) {
                     {t.overlay.result}
                   </span>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" onClick={speakResult}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={speakResult}
+                      disabled={!soundEffects}
+                    >
                       <Volume2 className="h-5 w-5" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={copyResult}>

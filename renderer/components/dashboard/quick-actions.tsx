@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n/i18n-context";
 import { cn } from "@/lib/utils";
 
 export function QuickActions() {
-  const { voiceConfig, setVoiceConfig, reducedMotion, personality } =
+  const { voiceConfig, setVoiceConfig, reducedMotion, personality, soundEffects } =
     useSettings();
   const { t } = useI18n();
 
@@ -16,6 +16,7 @@ export function QuickActions() {
       label: t.quickActions.testVoice,
       icon: Volume2,
       onClick: () => {
+        if (!soundEffects) return;
         if (typeof window !== "undefined" && "speechSynthesis" in window) {
           const utterance = new SpeechSynthesisUtterance(
             `Hello! I am ${personality.name}, your desktop companion.`
@@ -25,7 +26,8 @@ export function QuickActions() {
           window.speechSynthesis.speak(utterance);
         }
       },
-      variant: "default" as const
+      variant: "default" as const,
+      disabled: !soundEffects
     },
     {
       label: voiceConfig.enabled
@@ -55,6 +57,7 @@ export function QuickActions() {
             key={action.label}
             variant={action.variant}
             size="lg"
+            disabled={action.disabled}
             className={cn(
               "h-14 gap-3 px-6 text-base",
               reducedMotion ? "" : "transition-all"
