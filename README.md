@@ -1,8 +1,10 @@
 <div align="center">
-  <div>
-    <img src="resources/icon.webp" alt="logo" height="80" style="vertical-align: middle;" />
-    <span style="font-size: 2.5em; font-weight: bold; vertical-align: middle; margin-left: 15px;">Kisaki</span>
-  </div>
+  <table align="center">
+    <tr>
+      <td><img src="resources/icon.webp" alt="logo" width="80" height="80"></td>
+      <td><h1 style="margin-left: 15px;">Kisaki</h1></td>
+    </tr>
+  </table>
   <p>The personal desktop companion for the elderly.</p>
   <div>
     <img src="https://img.shields.io/badge/Made with-TypeScript-blue" />
@@ -14,6 +16,8 @@
 
 Kisaki is an Electron desktop companion focused on accessibility and ease of use.
 It combines a configurable dashboard, text-assist tools, and voice output into a lightweight cross-platform app.
+
+![Screenshot](resources/kisaki.png)
 
 ## Highlights
 
@@ -68,7 +72,6 @@ To get started with Kisaki, please either build it locally or download a copy in
 - React + TypeScript
 - Tailwind CSS + Radix UI
 - Hugging Face Inference API (`@huggingface/inference`)
-- `say` package for native TTS in Electron main process
 
 ## Project Structure
 
@@ -95,6 +98,8 @@ Example:
 ```env
 NEXT_PUBLIC_HF_API_KEY=""
 ```
+
+> You can generate an API key [here](https://huggingface.co/settings/tokens)!
 
 ## Running locally
 
