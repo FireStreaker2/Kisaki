@@ -13,7 +13,14 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MobileSidebar } from "./mobile-sidebar";
 
-export function Header() {
+type TabType = "companion" | "voice" | "text-tools" | "ai-model" | "meta";
+
+interface HeaderProps {
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
+}
+
+export function Header({ activeTab, onTabChange }: HeaderProps) {
   const { theme, setTheme, notifications, reducedMotion } = useSettings();
   const { t } = useI18n();
 
@@ -32,7 +39,7 @@ export function Header() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-80 p-0">
-          <MobileSidebar />
+          <MobileSidebar activeTab={activeTab} onTabChange={onTabChange} />
         </SheetContent>
       </Sheet>
 

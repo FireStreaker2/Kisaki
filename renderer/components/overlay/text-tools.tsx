@@ -56,7 +56,7 @@ function PanelContent({ initialText }: { initialText: string }) {
   const [copied, setCopied] = useState<boolean>(false);
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  const { textToolsConfig } = useSettings();
+  const { textToolsConfig, personality, aiModelConfig } = useSettings();
 
   const hf = new InferenceClient(process.env.NEXT_PUBLIC_HF_API_KEY || "");
 
@@ -110,6 +110,15 @@ function PanelContent({ initialText }: { initialText: string }) {
 
     try {
       let prompt = "";
+      const companionStyle = [
+        `You are ${personality.name}.`,
+        `Use a ${personality.tone} tone.`,
+        `Keep the response ${personality.verbosity}.`,
+        personality.humor
+          ? "Humor is allowed when it improves clarity and remains tasteful."
+          : "Do not add jokes or playful language.",
+        `Use a ${textToolsConfig.readingLevel} reading level unless accuracy requires technical terms.`
+      ].join(" ");
 
       switch (tool) {
         case "explain":
@@ -127,8 +136,11 @@ function PanelContent({ initialText }: { initialText: string }) {
       }
 
       const response = await hf.chatCompletion({
-        model: "meta-llama/Llama-3.1-8B-Instruct:cerebras",
-        messages: [{ role: "user", content: prompt }]
+        model: aiModelConfig.model,
+        messages: [
+          { role: "system", content: companionStyle },
+          { role: "user", content: prompt }
+        ]
       });
 
       const content = response.choices[0].message.content as string;

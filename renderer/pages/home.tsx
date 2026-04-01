@@ -6,7 +6,7 @@ import { Header } from "@/components/dashboard/header";
 import { CompanionSettings } from "@/components/dashboard/companion-settings";
 import { VoiceSettings } from "@/components/dashboard/voice-settings";
 import { TextToolsSettings } from "@/components/dashboard/text-tools-settings";
-import { MCPSettings } from "@/components/dashboard/mcp-settings";
+import { AIModelSettings } from "@/components/dashboard/ai-model-settings";
 import { MetaSettings } from "@/components/dashboard/meta-settings";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { StatusPanel } from "@/components/dashboard/status-panel";
@@ -14,7 +14,7 @@ import { useSettings } from "@/components/dashboard/settings-context";
 import { I18nProvider } from "../lib/i18n/i18n-context";
 import type { Language } from "../lib/i18n/translations";
 
-type TabType = "companion" | "voice" | "text-tools" | "mcp" | "meta";
+type TabType = "companion" | "voice" | "text-tools" | "ai-model" | "meta";
 
 function DashboardContent() {
   const [activeTab, setActiveTab] = useState<TabType>("companion");
@@ -28,8 +28,8 @@ function DashboardContent() {
         return <VoiceSettings />;
       case "text-tools":
         return <TextToolsSettings />;
-      case "mcp":
-        return <MCPSettings />;
+      case "ai-model":
+        return <AIModelSettings />;
       case "meta":
         return <MetaSettings />;
       default:
@@ -48,7 +48,7 @@ function DashboardContent() {
         <div className="flex h-screen overflow-hidden">
           <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
           <div className="flex flex-1 flex-col overflow-hidden">
-            <Header />
+            <Header activeTab={activeTab} onTabChange={setActiveTab} />
             <main className="flex-1 overflow-y-auto p-6 lg:p-8">
               <div className="mx-auto max-w-6xl space-y-6">
                 <StatusPanel />

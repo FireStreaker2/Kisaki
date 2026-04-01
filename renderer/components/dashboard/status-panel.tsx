@@ -1,24 +1,16 @@
 "use client";
 
-import { Wifi, WifiOff, Mic, MicOff, CheckCircle2 } from "lucide-react";
+import { Mic, MicOff, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSettings } from "./settings-context";
 import { useI18n } from "@/lib/i18n/i18n-context";
 import { cn } from "@/lib/utils";
 
 export function StatusPanel() {
-  const { mcpConfig, voiceConfig, reducedMotion } = useSettings();
+  const { voiceConfig, reducedMotion } = useSettings();
   const { t } = useI18n();
 
   const statusItems = [
-    {
-      label: t.status.mcpConnection,
-      connected: mcpConfig.connected,
-      icon: mcpConfig.connected ? Wifi : WifiOff,
-      description: mcpConfig.connected
-        ? t.status.connectedServer
-        : t.status.notConnected
-    },
     {
       label: t.status.voiceRecognition,
       connected: voiceConfig.enabled,

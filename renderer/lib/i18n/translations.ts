@@ -16,8 +16,8 @@ export const translations = {
       voiceDesc: "Speech & listening",
       textTools: "Text Tools",
       textToolsDesc: "Explain, summarize & more",
-      connections: "Connections",
-      connectionsDesc: "MCP & AI Models",
+      aiModel: "AI Model",
+      aiModelDesc: "Select AI model",
       dashboard: "Dashboard",
       dashboardDesc: "Customize this app"
     },
@@ -39,9 +39,6 @@ export const translations = {
 
     // Status panel
     status: {
-      mcpConnection: "MCP Connection",
-      connectedServer: "Connected to server",
-      notConnected: "Not connected",
       voiceRecognition: "Voice Recognition",
       listeningCommands: "Listening for commands",
       voiceDisabled: "Voice disabled",
@@ -171,64 +168,15 @@ export const translations = {
       step4: "Your companion will show you the result and can read it aloud"
     },
 
-    // MCP settings
-    mcp: {
-      title: "MCP Connection & Tools",
-      description:
-        "Connect to Model Context Protocol servers to enable powerful task assistance",
-      connected: "Connected",
-      notConnected: "Not Connected",
-      readyToHelp: "MCP server is ready to help",
-      connectToEnable: "Connect to enable task assistance",
-      connectNow: "Connect Now",
-      connecting: "Connecting...",
-      disconnect: "Disconnect",
-      serverConfig: "Server Configuration",
-      serverConfigDesc: "Enter your MCP server details to connect",
-      serverAddress: "Server Address",
-      serverAddressDesc: "The URL of your MCP server",
-      serverPlaceholder: "https://mcp.example.com",
-      apiKey: "API Key",
-      apiKeyDesc: "Your secret key for authentication",
-      apiKeyPlaceholder: "Enter your API key",
-      show: "Show",
-      hide: "Hide",
-      autoConnect: "Auto-Connect on Startup",
-      autoConnectDesc: "Automatically connect when your computer starts",
-      availableTools: "Available Tools",
-      availableToolsDesc:
-        "Choose which tools your companion can use to help you",
-      whatIsMcp: "What is MCP?",
-      mcpExplanation:
-        "The Model Context Protocol (MCP) allows your companion to connect to specialized servers that provide additional capabilities. When connected, your companion can help with tasks like managing files, searching the web, setting reminders, and much more - all through natural conversation.",
-      tools: {
-        fileManager: "File Manager",
-        fileManagerDesc: "Organize and find files on your computer",
-        webSearch: "Web Search",
-        webSearchDesc: "Search the internet for information",
-        calculator: "Calculator",
-        calculatorDesc: "Perform calculations and conversions",
-        reminders: "Reminders",
-        remindersDesc: "Set reminders and notifications",
-        calendar: "Calendar",
-        calendarDesc: "Manage events and schedules",
-        email: "Email Assistant",
-        emailDesc: "Help compose and manage emails",
-        weather: "Weather",
-        weatherDesc: "Get weather forecasts and alerts"
-      },
-      // AI Model settings
-      aiModel: "AI Model",
+    // AI Model settings
+    aiModel: {
       aiModelTitle: "AI Model Selection",
       aiModelDesc: "Choose which AI model powers your companion",
       selectModel: "Select Model",
-      freeModels: "Free Models",
-      premiumModels: "Premium Models",
       modelSpeed: "Speed",
       modelQuality: "Quality",
       modelCost: "Cost",
-      free: "Free",
-      paid: "Paid"
+      free: "Free"
     },
 
     // Meta settings

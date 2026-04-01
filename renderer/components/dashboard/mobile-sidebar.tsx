@@ -1,12 +1,18 @@
 "use client";
 
-import { Bot, Mic, FileText, Plug, Settings, Sparkles } from "lucide-react";
+import { Bot, Mic, FileText, Brain, Settings, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n/i18n-context";
+import { SheetClose } from "@/components/ui/sheet";
 
-type TabType = "companion" | "voice" | "text-tools" | "mcp" | "meta";
+type TabType = "companion" | "voice" | "text-tools" | "ai-model" | "meta";
 
-export function MobileSidebar() {
+interface MobileSidebarProps {
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
+}
+
+export function MobileSidebar({ activeTab, onTabChange }: MobileSidebarProps) {
   const { t } = useI18n();
 
   const navItems: {
@@ -34,10 +40,10 @@ export function MobileSidebar() {
       description: t.nav.textToolsDesc
     },
     {
-      id: "mcp",
-      label: t.nav.connections,
-      icon: Plug,
-      description: t.nav.connectionsDesc
+      id: "ai-model",
+      label: t.nav.aiModel,
+      icon: Brain,
+      description: t.nav.aiModelDesc
     },
     {
       id: "meta",
@@ -68,22 +74,39 @@ export function MobileSidebar() {
       <nav className="flex-1 space-y-2 p-4">
         {navItems.map((item) => {
           const Icon = item.icon;
+          const isActive = activeTab === item.id;
           return (
-            <button
-              key={item.id}
-              className={cn(
-                "flex w-full items-center gap-4 rounded-xl px-4 py-4 text-left transition-all duration-200",
-                "text-sidebar-foreground/80 hover:bg-sidebar-accent/50"
-              )}
-            >
-              <div className="bg-sidebar-accent flex h-10 w-10 items-center justify-center rounded-lg">
-                <Icon className="text-sidebar-foreground/70 h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-medium">{item.label}</p>
-                <p className="text-sm opacity-70">{item.description}</p>
-              </div>
-            </button>
+            <SheetClose asChild key={item.id}>
+              <button
+                onClick={() => onTabChange(item.id)}
+                className={cn(
+                  "flex w-full items-center gap-4 rounded-xl px-4 py-4 text-left transition-all duration-200",
+                  isActive
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg",
+                    isActive ? "bg-sidebar-primary-foreground/20" : "bg-sidebar-accent"
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "h-5 w-5",
+                      isActive
+                        ? "text-sidebar-primary-foreground"
+                        : "text-sidebar-foreground/70"
+                    )}
+                  />
+                </div>
+                <div>
+                  <p className="font-medium">{item.label}</p>
+                  <p className="text-sm opacity-70">{item.description}</p>
+                </div>
+              </button>
+            </SheetClose>
           );
         })}
       </nav>

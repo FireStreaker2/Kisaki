@@ -40,13 +40,6 @@ interface AIModelConfig {
   useCustomEndpoint: boolean;
   customEndpoint: string;
 }
-interface MCPConfig {
-  connected: boolean;
-  serverUrl: string;
-  apiKey: string;
-  autoConnect: boolean;
-  allowedTools: string[];
-}
 interface MetaConfig {
   theme: "light" | "dark" | "system";
   fontSize: number;
@@ -62,7 +55,6 @@ export interface AllSettings {
   voiceConfig: VoiceConfig;
   textToolsConfig: TextToolsConfig;
   aiModelConfig: AIModelConfig;
-  mcpConfig: MCPConfig;
   metaConfig: MetaConfig;
 }
 
@@ -78,9 +70,6 @@ interface SettingsContextType {
 
   aiModelConfig: AIModelConfig;
   setAIModelConfig: (a: AIModelConfig) => void;
-
-  mcpConfig: MCPConfig;
-  setMCPConfig: (m: MCPConfig) => void;
 
   theme: "light" | "dark" | "system";
   setTheme: (t: "light" | "dark" | "system") => void;
@@ -145,13 +134,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     customEndpoint: ""
   });
 
-  const [mcpConfig, setMCPConfig] = useState<MCPConfig>({
-    connected: false,
-    serverUrl: "",
-    apiKey: "",
-    autoConnect: true,
-    allowedTools: ["file-manager", "web-search", "calculator", "reminders"]
-  });
+
 
   const [theme, setTheme] = useState<"light" | "dark" | "system">("light");
   const [fontSize, setFontSize] = useState(18);
@@ -167,7 +150,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     voiceConfig,
     textToolsConfig,
     aiModelConfig,
-    mcpConfig,
     metaConfig: {
       theme,
       fontSize,
@@ -198,7 +180,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setVoiceConfig(s.voiceConfig);
         setTextToolsConfig(s.textToolsConfig);
         setAIModelConfig(s.aiModelConfig);
-        setMCPConfig(s.mcpConfig);
         setTheme(s.metaConfig.theme);
         setFontSize(s.metaConfig.fontSize);
         setHighContrast(s.metaConfig.highContrast);
@@ -219,7 +200,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       setVoiceConfig(s.voiceConfig);
       setTextToolsConfig(s.textToolsConfig);
       setAIModelConfig(s.aiModelConfig);
-      setMCPConfig(s.mcpConfig);
       setTheme(s.metaConfig.theme);
       setFontSize(s.metaConfig.fontSize);
       setHighContrast(s.metaConfig.highContrast);
@@ -256,7 +236,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     voiceConfig,
     textToolsConfig,
     aiModelConfig,
-    mcpConfig,
     theme,
     fontSize,
     highContrast,
@@ -278,8 +257,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setTextToolsConfig,
         aiModelConfig,
         setAIModelConfig,
-        mcpConfig,
-        setMCPConfig,
         theme,
         setTheme,
         fontSize,

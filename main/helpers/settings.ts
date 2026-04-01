@@ -32,13 +32,6 @@ export const defaultSettings: AllSettings = {
     useCustomEndpoint: false,
     customEndpoint: ""
   },
-  mcpConfig: {
-    connected: false,
-    serverUrl: "",
-    apiKey: "",
-    autoConnect: true,
-    allowedTools: ["file-manager", "web-search", "calculator", "reminders"]
-  },
   metaConfig: {
     theme: "light",
     fontSize: 18,

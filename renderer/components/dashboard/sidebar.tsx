@@ -1,11 +1,11 @@
 "use client";
 
-import { Bot, Mic, FileText, Plug, Settings, Sparkles } from "lucide-react";
+import { Bot, Mic, FileText, Brain, Settings, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSettings } from "./settings-context";
 import { useI18n } from "@/lib/i18n/i18n-context";
 
-type TabType = "companion" | "voice" | "text-tools" | "mcp" | "meta";
+type TabType = "companion" | "voice" | "text-tools" | "ai-model" | "meta";
 
 interface SidebarProps {
   activeTab: TabType;
@@ -41,10 +41,10 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       description: t.nav.textToolsDesc
     },
     {
-      id: "mcp",
-      label: t.nav.connections,
-      icon: Plug,
-      description: t.nav.connectionsDesc
+      id: "ai-model",
+      label: t.nav.aiModel,
+      icon: Brain,
+      description: t.nav.aiModelDesc
     },
     {
       id: "meta",
