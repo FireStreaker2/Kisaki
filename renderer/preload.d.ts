@@ -8,7 +8,11 @@ declare global {
     };
     electronAPI: {
       onText: (callback: (text: string) => void) => () => void;
-      speakText: (text: string) => void;
+      speakText: (payload: {
+        text: string;
+        voice?: string;
+        speed?: number;
+      }) => void;
     };
   }
 }

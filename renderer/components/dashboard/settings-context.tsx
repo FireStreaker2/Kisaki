@@ -20,9 +20,6 @@ interface VoiceConfig {
   voice: string;
   speed: number;
   pitch: number;
-  volume: number;
-  wakeWord: string;
-  continuousListening: boolean;
 }
 interface TextToolsConfig {
   explainEnabled: boolean;
@@ -110,10 +107,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     enabled: true,
     voice: "en-US-Neural2-C",
     speed: 0.9,
-    pitch: 1.0,
-    volume: 0.8,
-    wakeWord: "Hey Kisaki",
-    continuousListening: false
+    pitch: 1.0
   });
 
   const [textToolsConfig, setTextToolsConfig] = useState<TextToolsConfig>({
@@ -127,8 +121,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   });
 
   const [aiModelConfig, setAIModelConfig] = useState<AIModelConfig>({
-    provider: "openai",
-    model: "gpt-4o-mini",
+    provider: "cerebras",
+    model: "meta-llama/Llama-3.1-8B-Instruct:cerebras",
     apiKey: "",
     useCustomEndpoint: false,
     customEndpoint: ""

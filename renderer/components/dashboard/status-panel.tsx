@@ -1,24 +1,16 @@
 "use client";
 
-import { Mic, MicOff, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSettings } from "./settings-context";
 import { useI18n } from "@/lib/i18n/i18n-context";
 import { cn } from "@/lib/utils";
 
 export function StatusPanel() {
-  const { voiceConfig, reducedMotion } = useSettings();
+  const { reducedMotion } = useSettings();
   const { t } = useI18n();
 
   const statusItems = [
-    {
-      label: t.status.voiceRecognition,
-      connected: voiceConfig.enabled,
-      icon: voiceConfig.enabled ? Mic : MicOff,
-      description: voiceConfig.enabled
-        ? t.status.listeningCommands
-        : t.status.voiceDisabled
-    },
     {
       label: t.status.systemStatus,
       connected: true,

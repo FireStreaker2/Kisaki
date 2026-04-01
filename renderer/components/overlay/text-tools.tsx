@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { I18nProvider, useI18n } from "@/lib/i18n/i18n-context";
 import { useSettings } from "../dashboard/settings-context";
 import { Language } from "@/lib/i18n/translations";
@@ -13,6 +13,7 @@ import {
   Languages,
   ShieldCheck,
   Volume2,
+  Square,
   Copy,
   Check,
   ChevronDown,
@@ -39,9 +40,12 @@ interface ToolButton {
 }
 
 export function TextToolsPanel({ initialText = "" }: { initialText?: string }) {
-  const { language } = useSettings();
+  const { language, personality } = useSettings();
   return (
-    <I18nProvider language={language as Language}>
+    <I18nProvider
+      language={language as Language}
+      companionName={personality.name}
+    >
       <PanelContent initialText={initialText} />
     </I18nProvider>
   );
@@ -55,9 +59,16 @@ function PanelContent({ initialText }: { initialText: string }) {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [expanded, setExpanded] = useState<boolean>(false);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const { textToolsConfig, personality, aiModelConfig, soundEffects } =
-    useSettings();
+  const {
+    textToolsConfig,
+    personality,
+    aiModelConfig,
+    soundEffects,
+    voiceConfig
+  } = useSettings();
 
   const hf = new InferenceClient(process.env.NEXT_PUBLIC_HF_API_KEY || "");
 
@@ -179,11 +190,54 @@ function PanelContent({ initialText }: { initialText: string }) {
   };
 
   const speakResult = () => {
-    if (!soundEffects) return;
-    if (!result?.content || !("speechSynthesis" in window)) return;
-    const u = new SpeechSynthesisUtterance(result.content);
-    window.speechSynthesis.speak(u);
+    if (!soundEffects || !voiceConfig.enabled) return;
+    if (!result?.content) return;
+
+    if (typeof window !== "undefined" && "electronAPI" in window) {
+      window.electronAPI.speakText({
+        text: result.content,
+        voice: voiceConfig.voice,
+        speed: voiceConfig.speed
+      });
+      return;
+    }
+
+    if (!("speechSynthesis" in globalThis)) return;
+
+    if (isSpeaking) {
+      globalThis.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      utteranceRef.current = null;
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(result.content);
+    utterance.rate = voiceConfig.speed;
+    utterance.pitch = voiceConfig.pitch;
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      utteranceRef.current = null;
+    };
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      utteranceRef.current = null;
+    };
+
+    utteranceRef.current = utterance;
+    setIsSpeaking(true);
+    globalThis.speechSynthesis.speak(utterance);
   };
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in globalThis))
+      return;
+
+    return () => {
+      globalThis.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      utteranceRef.current = null;
+    };
+  }, []);
 
   return (
     <Card className="border-primary/20 h-full w-full max-w-xl border-2 shadow-lg">
@@ -246,9 +300,13 @@ function PanelContent({ initialText }: { initialText: string }) {
                       variant="ghost"
                       size="icon"
                       onClick={speakResult}
-                      disabled={!soundEffects}
+                      disabled={!soundEffects || !voiceConfig.enabled}
                     >
-                      <Volume2 className="h-5 w-5" />
+                      {isSpeaking ? (
+                        <Square className="h-5 w-5" />
+                      ) : (
+                        <Volume2 className="h-5 w-5" />
+                      )}
                     </Button>
                     <Button variant="ghost" size="icon" onClick={copyResult}>
                       {copied ? (

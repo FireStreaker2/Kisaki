@@ -1,13 +1,13 @@
 "use client";
 
-import { Mic, Volume2, RefreshCw } from "lucide-react";
+import { Volume2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "./settings-context";
 import { useI18n } from "@/lib/i18n/i18n-context";
 import { cn } from "@/lib/utils";
 
 export function QuickActions() {
-  const { voiceConfig, setVoiceConfig, reducedMotion, personality, soundEffects } =
+  const { voiceConfig, reducedMotion, personality, soundEffects } =
     useSettings();
   const { t } = useI18n();
 
@@ -30,20 +30,13 @@ export function QuickActions() {
       disabled: !soundEffects
     },
     {
-      label: voiceConfig.enabled
-        ? t.quickActions.pauseListening
-        : t.quickActions.startListening,
-      icon: Mic,
-      onClick: () =>
-        setVoiceConfig({ ...voiceConfig, enabled: !voiceConfig.enabled }),
-      variant: voiceConfig.enabled
-        ? ("secondary" as const)
-        : ("outline" as const)
-    },
-    {
       label: t.quickActions.restartCompanion,
       icon: RefreshCw,
-      onClick: () => console.log("Restarting companion..."),
+      onClick: () => {
+        if (typeof window !== "undefined" && window.electron) {
+          window.electron.send("restart-app");
+        }
+      },
       variant: "outline" as const
     }
   ];

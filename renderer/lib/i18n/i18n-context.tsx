@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import {
   translations,
   type Language,
@@ -17,10 +17,45 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 interface I18nProviderProps {
   children: ReactNode;
   language: Language;
+  companionName?: string;
 }
 
-export function I18nProvider({ children, language }: I18nProviderProps) {
-  const t = translations[language] || translations.en;
+function withCompanionName(value: unknown, companionName: string): unknown {
+  if (typeof value === "string") {
+    return value.replaceAll("Kisaki", companionName);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => withCompanionName(item, companionName));
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [
+        key,
+        withCompanionName(nestedValue, companionName)
+      ])
+    );
+  }
+
+  return value;
+}
+
+export function I18nProvider({
+  children,
+  language,
+  companionName
+}: I18nProviderProps) {
+  const baseTranslations = translations[language] || translations.en;
+  const normalizedCompanionName = companionName?.trim() || "Kisaki";
+  const t = useMemo(
+    () =>
+      withCompanionName(
+        baseTranslations,
+        normalizedCompanionName
+      ) as TranslationKeys,
+    [baseTranslations, normalizedCompanionName]
+  );
 
   return (
     <I18nContext.Provider value={{ t, language }}>

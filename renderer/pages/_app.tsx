@@ -11,10 +11,16 @@ import type { Language } from "@/lib/i18n/translations";
 const inter = Inter({ subsets: ["latin"] });
 
 function resolveLanguage(language: string): Language {
-  const supportedLanguages = new Set(["en", "es", "fr", "zh", "de", "it", "pt"]);
-  return supportedLanguages.has(language)
-    ? (language as Language)
-    : "en";
+  const supportedLanguages = new Set([
+    "en",
+    "es",
+    "fr",
+    "zh",
+    "de",
+    "it",
+    "pt"
+  ]);
+  return supportedLanguages.has(language) ? (language as Language) : "en";
 }
 
 interface AppShellProps {
@@ -24,6 +30,7 @@ interface AppShellProps {
 
 function AppShell({ Component, pageProps }: AppShellProps) {
   const {
+    personality,
     theme,
     fontSize,
     highContrast,
@@ -104,7 +111,10 @@ function AppShell({ Component, pageProps }: AppShellProps) {
   ]);
 
   return (
-    <I18nProvider language={resolveLanguage(language)}>
+    <I18nProvider
+      language={resolveLanguage(language)}
+      companionName={personality.name}
+    >
       <main className={`${inter.className} h-screen w-screen`}>
         <Component {...pageProps} />
       </main>

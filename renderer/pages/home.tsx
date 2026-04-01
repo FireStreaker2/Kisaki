@@ -18,7 +18,8 @@ type TabType = "companion" | "voice" | "text-tools" | "ai-model" | "meta";
 
 function DashboardContent() {
   const [activeTab, setActiveTab] = useState<TabType>("companion");
-  const { fontSize, highContrast, reducedMotion, language } = useSettings();
+  const { fontSize, highContrast, reducedMotion, language, personality } =
+    useSettings();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -38,7 +39,10 @@ function DashboardContent() {
   };
 
   return (
-    <I18nProvider language={language as Language}>
+    <I18nProvider
+      language={language as Language}
+      companionName={personality.name}
+    >
       <div
         className={`bg-background min-h-screen ${
           reducedMotion ? "" : "transition-all duration-300"

@@ -25,7 +25,7 @@ export const translations = {
     // Help section
     help: {
       title: "Need Help?",
-      description: 'Press the microphone button or say "Hey Kisaki" anytime!'
+      description: "Meet Kisaki, your personal desktop companion"
     },
 
     // Header
@@ -113,19 +113,7 @@ export const translations = {
       faster: "Faster",
       voicePitch: "Voice Pitch",
       lower: "Lower",
-      higher: "Higher",
-      volume: "Volume",
-      quieter: "Quieter",
-      louder: "Louder",
-      listeningSettings: "Listening Settings",
-      listeningSettingsDesc:
-        "Configure how your companion listens for commands",
-      wakeWord: "Wake Word",
-      wakeWordDesc: "Say this phrase to get your companion's attention",
-      wakeWordPlaceholder: "Hey Kisaki",
-      continuousListening: "Continuous Listening",
-      continuousListeningDesc:
-        "Always listen for the wake word (uses more battery)"
+      higher: "Higher"
     },
 
     // Text tools settings
@@ -282,8 +270,7 @@ export const translations = {
     },
     help: {
       title: "¿Necesitas ayuda?",
-      description:
-        '¡Pulsa el botón del micrófono o di "Hey Kisaki" en cualquier momento!'
+      description: "Conoce a Kisaki, tu compañero de escritorio personal"
     },
     header: {
       getHelp: "Obtener ayuda",
@@ -363,19 +350,7 @@ export const translations = {
       faster: "Más rápido",
       voicePitch: "Tono de voz",
       lower: "Más grave",
-      higher: "Más agudo",
-      volume: "Volumen",
-      quieter: "Más bajo",
-      louder: "Más alto",
-      listeningSettings: "Ajustes de escucha",
-      listeningSettingsDesc:
-        "Configura cómo tu compañero escucha los comandos",
-      wakeWord: "Palabra de activación",
-      wakeWordDesc: "Di esta frase para llamar la atención de tu compañero",
-      wakeWordPlaceholder: "Hey Kisaki",
-      continuousListening: "Escucha continua",
-      continuousListeningDesc:
-        "Escuchar siempre la palabra de activación (usa más batería)"
+      higher: "Más agudo"
     },
     textTools: {
       title: "Herramientas de Asistencia de Texto",
@@ -520,7 +495,7 @@ export const translations = {
     help: {
       title: "Besoin d'aide ?",
       description:
-        'Appuyez sur le bouton micro ou dites "Hey Kisaki" à tout moment !'
+        'Appuyez s "Rencontrez Kisaki, votre compagnon de bureau personnel'
     },
     header: {
       getHelp: "Obtenir de l'aide",
@@ -592,7 +567,8 @@ export const translations = {
       selectionDesc: "Choisissez la voix de votre compagnon",
       selectVoice: "Sélectionner une voix",
       testVoice: "Tester cette voix",
-      testMessage: "Bonjour ! Voici comment je sonnerai quand je vous parlerai.",
+      testMessage:
+        "Bonjour ! Voici comment je sonnerai quand je vous parlerai.",
       adjustments: "Réglages de voix",
       adjustmentsDesc: "Ajustez précisément le rendu de la voix",
       speakingSpeed: "Vitesse d'élocution",
@@ -600,19 +576,7 @@ export const translations = {
       faster: "Plus rapide",
       voicePitch: "Hauteur de voix",
       lower: "Plus grave",
-      higher: "Plus aigu",
-      volume: "Volume",
-      quieter: "Plus faible",
-      louder: "Plus fort",
-      listeningSettings: "Paramètres d'écoute",
-      listeningSettingsDesc:
-        "Configurez comment votre compagnon écoute les commandes",
-      wakeWord: "Mot d'activation",
-      wakeWordDesc: "Dites cette phrase pour attirer l'attention",
-      wakeWordPlaceholder: "Hey Kisaki",
-      continuousListening: "Écoute continue",
-      continuousListeningDesc:
-        "Toujours écouter le mot d'activation (consomme plus de batterie)"
+      higher: "Plus aigu"
     },
     textTools: {
       title: "Outils d'Assistance Texte",
@@ -630,8 +594,7 @@ export const translations = {
       factCheck: "Vérifier les faits",
       factCheckDesc: "Vérifier les affirmations et trouver des sources",
       readingLevel: "Niveau de lecture",
-      readingLevelDesc:
-        "Définir le style des explications et des résumés",
+      readingLevelDesc: "Définir le style des explications et des résumés",
       simple: "Simple",
       simpleDesc: "Facile à comprendre, vocabulaire de base",
       standard: "Standard",
@@ -642,17 +605,16 @@ export const translations = {
       translationSettingsDesc:
         "Configurez vos langues préférées pour la traduction",
       defaultLanguage: "Langue de traduction par défaut",
-      defaultLanguageDesc:
-        "Le texte sera traduit vers cette langue par défaut",
+      defaultLanguageDesc: "Le texte sera traduit vers cette langue par défaut",
       autoDetect: "Détection automatique de la langue source",
-      autoDetectDesc:
-        "Détecter automatiquement la langue du texte sélectionné",
+      autoDetectDesc: "Détecter automatiquement la langue du texte sélectionné",
       howToUse: "Comment utiliser les outils texte",
       step1: "Sélectionnez du texte dans n'importe quelle application",
       step2: "Appuyez sur Control + C pour envoyer le texte à votre compagnon",
       step3:
         "Cliquez sur l'outil voulu (Expliquer, Résumer, Traduire ou Vérifier les faits)",
-      step4: "Votre compagnon affichera le résultat et pourra le lire à voix haute"
+      step4:
+        "Votre compagnon affichera le résultat et pourra le lire à voix haute"
     },
     aiModel: {
       aiModelTitle: "Sélection du Modèle IA",
@@ -762,7 +724,7 @@ export const translations = {
     },
     help: {
       title: "需要帮助？",
-      description: "随时按下麦克风按钮，或说“Hey Kisaki”！"
+      description: "认识 Kisaki，你的个人桌面伴侣"
     },
     header: {
       getHelp: "获取帮助",
@@ -839,17 +801,7 @@ export const translations = {
       faster: "更快",
       voicePitch: "音调",
       lower: "更低",
-      higher: "更高",
-      volume: "音量",
-      quieter: "更小",
-      louder: "更大",
-      listeningSettings: "监听设置",
-      listeningSettingsDesc: "配置助手如何监听指令",
-      wakeWord: "唤醒词",
-      wakeWordDesc: "说出这句话以唤醒助手",
-      wakeWordPlaceholder: "Hey Kisaki",
-      continuousListening: "持续监听",
-      continuousListeningDesc: "始终监听唤醒词（会更耗电）"
+      higher: "更高"
     },
     textTools: {
       title: "文本辅助工具",
@@ -909,8 +861,7 @@ export const translations = {
       fontSize: "字体大小",
       smaller: "更小",
       larger: "更大",
-      previewText:
-        "这是你所选字号的预览效果。请确保你能舒适阅读这段文字。",
+      previewText: "这是你所选字号的预览效果。请确保你能舒适阅读这段文字。",
       accessibility: "无障碍",
       accessibilityDesc: "让仪表盘更易用的选项",
       highContrast: "高对比度",

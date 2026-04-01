@@ -23,7 +23,7 @@ import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 const aiModels = [
   {
     id: "meta-llama/Llama-3.1-8B-Instruct:cerebras",
-    provider: "Meta",
+    provider: "cerebras",
     name: "Cerebras",
     speed: "Fast",
     quality: "Good"

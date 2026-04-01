@@ -29,8 +29,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
     // Return cleanup function if needed
     return () => ipcRenderer.removeListener("selection-text", listener);
   },
-  speakText: (text: string) => {
-    if (!text) return;
-    ipcRenderer.send("speak-text", text); // optional Node-side TTS
+  speakText: (payload: { text: string; voice?: string; speed?: number }) => {
+    if (!payload?.text) return;
+    ipcRenderer.send("speak-text", payload); // Node-side TTS
   }
 });

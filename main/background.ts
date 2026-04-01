@@ -15,6 +15,124 @@ import { AllSettings } from "../renderer/components/dashboard/settings-context";
 let settings = defaultSettings;
 const isProd = process.env.NODE_ENV === "production";
 
+type SpeakPayload = string | { text: string; voice?: string; speed?: number };
+
+const sayVoiceCandidatesById: Record<string, string[]> = {
+  // Linux festival uses voice functions like (voice_cmu_us_slt_cg)
+  "en-US-Neural2-C": [
+    "voice_cmu_us_slt_cg",
+    "samantha",
+    "zira",
+    "english-us",
+    "en-us"
+  ],
+  "en-US-Neural2-D": [
+    "voice_cmu_us_rms_cg",
+    "alex",
+    "david",
+    "english-us",
+    "en-us"
+  ],
+  "en-US-Neural2-F": [
+    "voice_cmu_us_slt_cg",
+    "victoria",
+    "hazel",
+    "english-us",
+    "en-us"
+  ],
+  "en-GB-Neural2-B": [
+    "voice_cmu_us_awb_cg",
+    "daniel",
+    "george",
+    "english_rp",
+    "en-gb"
+  ],
+  "en-GB-Neural2-C": [
+    "voice_cmu_us_awb_cg",
+    "moira",
+    "hazel",
+    "english_rp",
+    "en-gb"
+  ]
+};
+
+function clampSpeed(speed?: number): number | undefined {
+  if (typeof speed !== "number" || Number.isNaN(speed)) return undefined;
+  return Math.min(2, Math.max(0.5, speed));
+}
+
+function getLocaleCandidates(voiceId?: string): string[] {
+  if (!voiceId || !voiceId.includes("-")) return [];
+  const locale = voiceId.split("-Neural")[0]?.toLowerCase();
+  if (!locale) return [];
+
+  const [lang, region] = locale.split("-");
+  const candidates = [locale, lang];
+
+  if (region) {
+    candidates.push(`${lang}_${region}`);
+    candidates.push(`${lang}-${region}`);
+    if (locale === "en-us") candidates.push("english-us");
+    if (locale === "en-gb") candidates.push("english_rp");
+  }
+
+  return candidates;
+}
+
+function resolveSayVoice(voiceId?: string): Promise<string | undefined> {
+  return new Promise((resolve) => {
+    if (!voiceId) {
+      resolve(undefined);
+      return;
+    }
+
+    // say.js on Linux/Festival does not reliably expose getInstalledVoices.
+    // Use known festival voice functions directly.
+    if (process.platform === "linux") {
+      resolve(sayVoiceCandidatesById[voiceId]?.[0]);
+      return;
+    }
+
+    (
+      say as unknown as {
+        getInstalledVoices: (
+          callback: (error: unknown, installedVoices?: string[]) => void
+        ) => void;
+      }
+    ).getInstalledVoices((error, installedVoices = []) => {
+      if (error || !installedVoices || installedVoices.length === 0) {
+        resolve(undefined);
+        return;
+      }
+
+      const lowerInstalled = installedVoices.map((v) => v.toLowerCase());
+      const configuredCandidates = sayVoiceCandidatesById[voiceId] ?? [];
+      const localeCandidates = getLocaleCandidates(voiceId);
+      const allCandidates = [...configuredCandidates, ...localeCandidates];
+
+      for (const candidate of allCandidates) {
+        const exactIndex = lowerInstalled.findIndex((v) => v === candidate);
+        if (exactIndex >= 0) {
+          resolve(installedVoices[exactIndex]);
+          return;
+        }
+      }
+
+      for (const candidate of allCandidates) {
+        const partialIndex = lowerInstalled.findIndex((v) =>
+          v.includes(candidate)
+        );
+        if (partialIndex >= 0) {
+          resolve(installedVoices[partialIndex]);
+          return;
+        }
+      }
+
+      resolve(undefined);
+    });
+  });
+}
+
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {
   app.quit();
@@ -98,7 +216,6 @@ if (isProd) serve({ directory: "app" });
       console.error("Clipboard read error:", err);
     }
   }, 200); // check every 200ms
-  // ----------------------------------------------------
 })();
 
 app.on("child-process-gone", (_event, details) => {
@@ -107,8 +224,22 @@ app.on("child-process-gone", (_event, details) => {
 
 app.on("window-all-closed", () => app.quit());
 
-ipcMain.on("speak-text", (_event, text: string) => {
-  say.speak(text);
+ipcMain.on("speak-text", async (_event, payload: SpeakPayload) => {
+  const text = typeof payload === "string" ? payload : payload?.text;
+  if (!text) return;
+
+  const voiceId = typeof payload === "string" ? undefined : payload?.voice;
+  const speed = clampSpeed(
+    typeof payload === "string" ? undefined : payload?.speed
+  );
+  const resolvedVoice = await resolveSayVoice(voiceId);
+
+  say.speak(text, resolvedVoice, speed);
+});
+
+ipcMain.on("restart-app", () => {
+  app.relaunch();
+  app.exit(0);
 });
 
 ipcMain.handle("get-settings", () => settings);

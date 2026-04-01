@@ -1,6 +1,6 @@
 "use client";
 
-import { Mic, Volume2, Ear, Radio } from "lucide-react";
+import { Mic, Volume2, Radio } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -22,12 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSettings } from "./settings-context";
 import { useI18n } from "@/lib/i18n/i18n-context";
-import {
-  FieldGroup,
-  Field,
-  FieldLabel,
-  FieldDescription
-} from "@/components/ui/field";
+import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 
 const voices = [
   {
@@ -58,17 +52,25 @@ const voices = [
 ];
 
 export function VoiceSettings() {
-  const { voiceConfig, setVoiceConfig, reducedMotion, soundEffects } = useSettings();
+  const { voiceConfig, setVoiceConfig, soundEffects } = useSettings();
   const { t } = useI18n();
 
   const testVoice = () => {
     if (!soundEffects) return;
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+    if (typeof window !== "undefined" && "electronAPI" in window) {
+      window.electronAPI.speakText({
+        text: t.voice.testMessage,
+        voice: voiceConfig.voice,
+        speed: voiceConfig.speed
+      });
+      return;
+    }
+
+    if (typeof window !== "undefined" && "speechSynthesis" in globalThis) {
       const utterance = new SpeechSynthesisUtterance(t.voice.testMessage);
       utterance.rate = voiceConfig.speed;
       utterance.pitch = voiceConfig.pitch;
-      utterance.volume = voiceConfig.volume;
-      window.speechSynthesis.speak(utterance);
+      globalThis.speechSynthesis.speak(utterance);
     }
   };
 
@@ -237,86 +239,6 @@ export function VoiceSettings() {
                 {t.voice.higher}
               </span>
             </div>
-          </div>
-
-          {/* Volume Slider */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label className="text-base font-medium">{t.voice.volume}</Label>
-              <span className="bg-muted rounded-lg px-3 py-1 text-sm font-medium">
-                {Math.round(voiceConfig.volume * 100)}%
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-muted-foreground text-sm">
-                {t.voice.quieter}
-              </span>
-              <Slider
-                value={[voiceConfig.volume]}
-                onValueChange={([value]) =>
-                  setVoiceConfig({ ...voiceConfig, volume: value })
-                }
-                min={0.1}
-                max={1}
-                step={0.1}
-                className="flex-1"
-                aria-label={t.voice.volume}
-              />
-              <span className="text-muted-foreground text-sm">
-                {t.voice.louder}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Wake Word & Listening */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3 text-xl">
-            <Ear className="text-primary h-6 w-6" />
-            {t.voice.listeningSettings}
-          </CardTitle>
-          <CardDescription className="text-base">
-            {t.voice.listeningSettingsDesc}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="wake-word" className="text-base font-medium">
-                {t.voice.wakeWord}
-              </FieldLabel>
-              <FieldDescription>{t.voice.wakeWordDesc}</FieldDescription>
-              <Input
-                id="wake-word"
-                value={voiceConfig.wakeWord}
-                onChange={(e) =>
-                  setVoiceConfig({ ...voiceConfig, wakeWord: e.target.value })
-                }
-                placeholder={t.voice.wakeWordPlaceholder}
-                className="h-14 text-lg"
-              />
-            </Field>
-          </FieldGroup>
-
-          <div className="bg-muted flex items-center justify-between rounded-xl p-5">
-            <div className="space-y-1">
-              <Label htmlFor="continuous" className="text-base font-medium">
-                {t.voice.continuousListening}
-              </Label>
-              <p className="text-muted-foreground text-sm">
-                {t.voice.continuousListeningDesc}
-              </p>
-            </div>
-            <Switch
-              id="continuous"
-              checked={voiceConfig.continuousListening}
-              onCheckedChange={(checked) =>
-                setVoiceConfig({ ...voiceConfig, continuousListening: checked })
-              }
-              className="scale-125"
-            />
           </div>
         </CardContent>
       </Card>

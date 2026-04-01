@@ -11,10 +11,7 @@ export const defaultSettings: AllSettings = {
     enabled: true,
     voice: "en-US-Neural2-C",
     speed: 0.9,
-    pitch: 1.0,
-    volume: 0.8,
-    wakeWord: "Hey Kisaki",
-    continuousListening: false
+    pitch: 1.0
   },
   textToolsConfig: {
     explainEnabled: true,
@@ -26,8 +23,8 @@ export const defaultSettings: AllSettings = {
     autoDetectLanguage: true
   },
   aiModelConfig: {
-    provider: "openai",
-    model: "gpt-4o-mini",
+    provider: "cerebras",
+    model: "meta-llama/Llama-3.1-8B-Instruct:cerebras",
     apiKey: "",
     useCustomEndpoint: false,
     customEndpoint: ""
